@@ -11,3 +11,13 @@ Under /password-manager/bin/www
 
 Where are middleware defined?
 Under /password-manager/app.js
+
+Databases is MongoDB / Google Cloud SQL(optionally)
+url : 'mongodb://127.0.0.1:27017/test'
+mySql {
+    host     : '127.0.0.1',
+    user     : 'root',
+    password : 'admin',
+    database : 'food_db'
+    }
+to run mySql you need to run  proxy with google software.
