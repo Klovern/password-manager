@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+var database = require('../config/database');
 var app = require('../app');
 var debug = require('debug')('fatbot-express:server');
 var http = require('http');
@@ -21,7 +21,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-var db = mongoose.connect('mongodb://127.0.0.1:27017/test');
+var db = mongoose.connect(database.mongoDb.url);
 
 //attach lister to connected event
 mongoose.connection.once('connected', function() {

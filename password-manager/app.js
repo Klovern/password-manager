@@ -59,10 +59,4 @@ app.use(function(err, req, res, next) {
 });
 
 
-
-
-
-
-//add mongodb
-//mongoose.connect('mongodb://localhost/passport-social-auth');
 module.exports = app;

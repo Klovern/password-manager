@@ -1,15 +1,14 @@
-const mysql = require('mysql');
-
 module.exports = {
-  'url' : '',
 
-}
+  mongoDb : {
+    url : 'mongodb://127.0.0.1:27017/test'
+},
 
-
-
-/*module.exports = mysql.createConnection({
+  mySql : {
     host     : '127.0.0.1',
     user     : 'root',
     password : 'admin',
     database : 'food_db'
-  });*/
+    
+  }
+}
