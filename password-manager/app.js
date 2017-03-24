@@ -13,20 +13,20 @@ var app = express();
 var flash = require('connect-flash');
 var configDB = require('./config/database.js');
 
+//require('./config/passport')(passport);
 
 app.use(session({
   secret: 'keyboard cat',
   resave: true,
   saveUninitialized: true
 }));
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.use(flash());
 
 
 // uncomment after placing your favicon in /public
@@ -57,6 +57,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error' , { err : res.locals.error});
 });
-
-
+//require('./app/index.js')(app, passport)
 module.exports = app;

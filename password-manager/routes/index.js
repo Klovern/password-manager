@@ -13,13 +13,23 @@ app.get('/', function(req, res, next) {
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+app.post('/login',
+  passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/login',
+                                   failureFlash: true })
+);
 
 app.get('/login', function(req, res) {
   // render the page and pass in any flash data if it exists
   res.render('login');
 });
+
+
+app.post('/signup', passport.authenticate('local-signup', {
+                                    successRedirect : '/', // redirect to the secure profile section
+                                    failureRedirect : '/signups', // redirect back to the signup page if there is an error
+                                    failureFlash : true  })
+);
 
 app.get('/signup', function(req, res) {
   // render the page and pass in any flash data if it exists
