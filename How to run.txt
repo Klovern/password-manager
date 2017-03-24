@@ -1,4 +1,0 @@
-set DEBUG=password-manager:* & npm start
-
-inside directory(example)
-Oskayan\password-manager\password-manager
