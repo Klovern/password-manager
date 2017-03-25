@@ -25,12 +25,15 @@ passport.use('local-login', new LocalStrategy({
 
      // find a user whose email is the same as the forms email
      // we are checking to see if the user trying to login already exists
+     console.log(`Ip trying to connect ${req.ip}`);
      User.findOne({ 'local.email' :  email }, function(err, user) {
          // if there are any errors, return the error before anything else
          if (err)
              return done(err);
-
          // if no user is found, return the message
+
+         if(!user.local.whIp == req.ip)
+            return done(null, false, req.flash('loginMessage', 'Your ip is not authorized.'));
          if (!user)
              return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
 
@@ -44,7 +47,7 @@ passport.use('local-login', new LocalStrategy({
 
  }));
 
-passport.use(new LocalStrategy(function(username, password, done) {
+passport.use(new LocalStrategy(function(req, username, password, done) {
     User.findOne({ username: username }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
@@ -73,6 +76,7 @@ passport.use('local-signup', new LocalStrategy({
      // find a user whose email is the same as the forms email
      // we are checking to see if the user trying to login already exists
      User.findOne({ 'local.email' :  email }, function(err, user) {
+
          // if there are any errors, return the error
          if (err)
              return done(err);
@@ -86,8 +90,11 @@ passport.use('local-signup', new LocalStrategy({
              // create the user
              var newUser            = new User();
              // set the user's local credentials
+
              newUser.local.email    = email;
              newUser.local.password = newUser.generateHash(password);
+             if(req.body.onoffswitch == "on")
+                newUser.local.whIp = req.ip;
 
              // save the user
              newUser.save(function(err) {
@@ -114,12 +121,13 @@ passport.use(new FacebookStrategy({
   // pull in our app id and secret from our auth.js file
   clientID        : configAuth.facebookAuth.clientID,
   clientSecret    : configAuth.facebookAuth.clientSecret,
-  callbackURL     : configAuth.facebookAuth.callbackURL
-
+  callbackURL     : configAuth.facebookAuth.callbackURL,
+  profileFields: [ 'email' ],
+  passReqToCallback : true // allows us to pass back the entire request to the callback
 },
 
 // facebook will send back the token and profile
-    function(token, refreshToken, profile, done) {
+    function(req,token, refreshToken, profile, done) {
 
       // asynchronous
       process.nextTick(function() {
@@ -144,6 +152,7 @@ passport.use(new FacebookStrategy({
             newUser.facebook.token = token; // we will save the token that facebook provides to the user
             newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
             newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+            newUser.facebook.whIp = req.ip;
 
             // save our user to the database
             newUser.save(function(err) {
@@ -167,9 +176,10 @@ passport.use(new GoogleStrategy({
   clientID        : configAuth.googleAuth.clientID,
   clientSecret    : configAuth.googleAuth.clientSecret,
   callbackURL     : configAuth.googleAuth.callbackURL,
+  passReqToCallback : true // allows us to pass back the entire request to the callback
 
 },
-      function(token, refreshToken, profile, done) {
+      function(req, token, refreshToken, profile, done) {
 
           // make the code asynchronous
           // User.findOne won't fire until we have all our data back from Google
@@ -193,6 +203,7 @@ passport.use(new GoogleStrategy({
                     newUser.google.token = token;
                     newUser.google.name  = profile.displayName;
                     newUser.google.email = profile.emails[0].value; // pull the first email
+                    newUser.google.whIp = req.ip;
 
           // save the user
           newUser.save(function(err) {

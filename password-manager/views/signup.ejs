@@ -27,8 +27,16 @@
               <label>Password</label>
               <input type="password" class="form-control" name="password">
           </div>
-
-          <button type="submit" class="btn btn-warning btn-sm">Generate a safe password</button>
+          <div class="form-group">
+            <label>Would you like to authorize your current IP?</label>
+            <div class="onoffswitch">
+              <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+              <label class="onoffswitch-label" for="myonoffswitch">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+              </label>
+            </div>
+          </div>
           <button type="submit" class="btn btn-warning btn-lg">Signup</button>
       </form>
 

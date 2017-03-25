@@ -12,7 +12,7 @@ var index = require('./routes/index'),
 var app = express();
 var flash = require('connect-flash');
 var configDB = require('./config/database.js');
-
+app.enable('trust proxy')
 //require('./config/passport')(passport);
 
 app.use(session({
