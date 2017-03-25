@@ -8,6 +8,8 @@ var passport = require('passport')
 , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 , LocalStrategy = require('passport-local').Strategy;
 
+var validation = require('../validation/validate');
+
 init();
 
 // =========================================================================
@@ -38,16 +40,20 @@ passport.use('local-login', new LocalStrategy({
          if (!user.validPassword(password))
              return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
 
-             if(user.local.whIp != 'undefined'){
-               console.log(user.local.whIp + "\t" +req.ip);
-                 if(user.local.whIp != req.ip)
-                    return done(null, false, req.flash('loginMessage', 'Your ip is not authorized.'));
-                   }
+        // if the user has set whitelistIp array and ip isnt authorized
+        console.log(!!user.local.whIp[0]);
+         if(!!user.local.whIp[0]){
+             if(!validation(user.local.whIp, req.ip)){
+                return done(null, false, req.flash('loginMessage', 'Your IP-adress is not authorized.'));
+              }
+          }
          // all is well, return successful user
          return done(null, user);
      });
 
  }));
+
+
 
 passport.use('local-signup', new LocalStrategy({
      // by default, local strategy uses username and password, we will override with email
@@ -140,7 +146,7 @@ passport.use(new FacebookStrategy({
             newUser.facebook.token = token; // we will save the token that facebook provides to the user
             newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
             newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-            newUser.facebook.whIp = req.ip;
+            newUser.facebook.whIp[0] = req.ip;
 
             // save our user to the database
             newUser.save(function(err) {
@@ -191,7 +197,7 @@ passport.use(new GoogleStrategy({
                     newUser.google.token = token;
                     newUser.google.name  = profile.displayName;
                     newUser.google.email = profile.emails[0].value; // pull the first email
-                    newUser.google.whIp = req.ip;
+                    newUser.google.whIp[0] = req.ip;
 
           // save the user
           newUser.save(function(err) {
