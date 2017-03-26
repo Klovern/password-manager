@@ -21,3 +21,9 @@ mySql {
     database : 'food_db'
     }
 to run mySql you need to run  proxy with google software.
+
+
+so if we blend SSH with SSL with this cert-based MA (to make sure the ip is correct) it should be somewhat secure.
+
+To compile, you'll need to have libkrb5-dev (kerberos development files) and libssl-dev
+(openssl development files) installed on your system. npm install ssh should do the rest.

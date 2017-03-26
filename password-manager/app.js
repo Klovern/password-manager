@@ -11,7 +11,7 @@ var index = require('./routes/index'),
             auth = require('./routes/auth');
 var app = express();
 var flash = require('connect-flash');
-var configDB = require('./config/database.js');
+var configDB = require('./config/database.js');;
 app.enable('trust proxy')
 //require('./config/passport')(passport);
 
@@ -46,6 +46,20 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+app.use(function (req, res, next) {
+   if (!req.client.authorized) {
+       return res.status(401).send('User is not authorized');
+   }
+
+   var cert = req.socket.getPeerCertificate();
+   if (cert.subject) {
+       console.log(cert.subject.CN);
+   }
+   next();
+});
+
+
 
 // error handler
 app.use(function(err, req, res, next) {
