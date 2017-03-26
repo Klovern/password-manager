@@ -11,7 +11,8 @@ var index = require('./routes/index'),
             auth = require('./routes/auth');
 var app = express();
 var flash = require('connect-flash');
-var configDB = require('./config/database.js');;
+var configDB = require('./config/database.js');
+var expressValidator = require('express-validator');
 app.enable('trust proxy')
 //require('./config/passport')(passport);
 
@@ -34,6 +35,7 @@ app.use(flash());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(expressValidator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/auth', auth);

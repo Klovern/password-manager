@@ -10,7 +10,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 var mail = require('../extra/mail');
 var generate = require('../extra/PWgen')
 var copy = require('copy-to-clipboard');
-
+var expressValidator = require('express-validator');
 
 
 
@@ -20,7 +20,6 @@ app.get('/', function(req, res, next) {
 
 
 app.get('/mail', function(req,res,next){
-  console.log("hello");
   mail();
 });
 
@@ -38,15 +37,15 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
-
-app.post('/signup', passport.authenticate('local-signup', {
-                                    successRedirect : '/success', // redirect to the secure profile section
-                                    failureRedirect : '/signups', // redirect back to the signup page if there is an error
-                                    failureFlash : true  })
+app.post('/signup', checkEmail, passport.authenticate('local-signup', {
+      successRedirect: '/home',
+      failureRedirect: '/signup',
+      failureFlash : true,
+    })
 );
 
+
 app.get('/signup', function(req, res) {
-  // render the page and pass in any flash data if it exists
   res.render('signup' ,{ message: req.flash('signupMessage') });
 });
 
@@ -66,7 +65,7 @@ app.get('/logout', function(req, res) {
 
 app.get('/generate',function(req,res){
   var genPw = generate();
-  res.render('signup' ,{ message: genPw })
+  res.render('signup' ,{ messages: genPw })
 });
 
 
@@ -83,6 +82,23 @@ function isLoggedIn(req, res, next) {
 
   res.redirect('/');
 }
+
+function checkEmail(req, res, next){
+    req.checkBody('email', 'Email is required').notEmpty();
+    req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('password', 'Passwords requried length is 7').len(7,20);
+    req.checkBody('password_confirm', 'Passwords must match').equals(req.body.password);
+    //validate
+    var errors = req.validationErrors();
+
+    if (errors) {
+        res.render('signup',{message : errors.map((e) => e.msg)});
+    } else {
+      next();
+    }
+}
+
+
 
 
 module.exports = app;

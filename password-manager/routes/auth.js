@@ -19,12 +19,4 @@ app.get('/google/callback',
                                       failureRedirect: '/fail' }));
 
 
-
-
-
-
-
-
-
-
 module.exports = app;
