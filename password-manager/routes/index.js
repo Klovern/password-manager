@@ -37,7 +37,7 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
-app.post('/signup', checkEmail, passport.authenticate('local-signup', {
+app.post('/signup', checkSignupRequest, passport.authenticate('local-signup', {
       successRedirect: '/home',
       failureRedirect: '/signup',
       failureFlash : true,
@@ -46,7 +46,7 @@ app.post('/signup', checkEmail, passport.authenticate('local-signup', {
 
 
 app.get('/signup', function(req, res) {
-  res.render('signup' ,{ message: req.flash('signupMessage') });
+  res.render('signup' ,{ messages: { generated: "" , errors : ""  , email:"" }});
 });
 
 
@@ -64,8 +64,8 @@ app.get('/logout', function(req, res) {
 
 
 app.get('/generate',function(req,res){
-  var genPw = generate();
-  res.render('signup' ,{ messages: genPw })
+  console.log("body" +String(req.body));
+  res.render('signup' ,{ messages: { generated : generate(), errors : "", email : req.body.email}});
 });
 
 
@@ -83,16 +83,16 @@ function isLoggedIn(req, res, next) {
   res.redirect('/');
 }
 
-function checkEmail(req, res, next){
-    req.checkBody('email', 'Email is required').notEmpty();
+function checkSignupRequest(req, res, next){
+    req.checkBody('email', 'Email is required').notEmpty().isEmail();
     req.checkBody('password', 'Password is required').notEmpty();
-    req.checkBody('password', 'Passwords requried length is 7').len(7,20);
+    req.checkBody('password', 'Passwords minimum length is 7').len(7,20);
     req.checkBody('password_confirm', 'Passwords must match').equals(req.body.password);
     //validate
     var errors = req.validationErrors();
 
     if (errors) {
-        res.render('signup',{message : errors.map((e) => e.msg)});
+        res.render('signup',{messages: { generated : "", errors : errors.map((e) => e.msg), email : req.body.email}});
     } else {
       next();
     }
