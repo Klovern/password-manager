@@ -41,7 +41,7 @@ passport.use('local-login', new LocalStrategy({
              return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
 
         // if the user has set whitelistIp array and ip isnt authorized
-        console.log(!!user.local.whIp[0]);
+        console.log(!!user.local.w)
          if(!!user.local.whIp[0]){
              if(!validation(user.local.whIp, req.ip)){
                 return done(null, false, req.flash('loginMessage', 'Your IP-adress is not authorized.'));
@@ -53,7 +53,20 @@ passport.use('local-login', new LocalStrategy({
 
  }));
 
+passport.use(new LocalStrategy(function(req, username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
 
+      return done(null, user);
+    });
+  }
+));
 
 passport.use('local-signup', new LocalStrategy({
      // by default, local strategy uses username and password, we will override with email
@@ -62,9 +75,13 @@ passport.use('local-signup', new LocalStrategy({
      passReqToCallback : true // allows us to pass back the entire request to the callback
  } ,
  function(req, email, password, done) {
-
+     // asynchronous
+     // User.findOne wont fire unless data is sent back
      process.nextTick(function() {
 
+
+     // find a user whose email is the same as the forms email
+     // we are checking to see if the user trying to login already exists
      User.findOne({ 'local.email' :  email }, function(err, user) {
 
          // if there are any errors, return the error
@@ -142,7 +159,7 @@ passport.use(new FacebookStrategy({
             newUser.facebook.token = token; // we will save the token that facebook provides to the user
             newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
             newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-            newUser.facebook.whIp[0] = req.ip;
+            newUser.facebook.whIp = req.ip;
 
             // save our user to the database
             newUser.save(function(err) {
@@ -193,7 +210,7 @@ passport.use(new GoogleStrategy({
                     newUser.google.token = token;
                     newUser.google.name  = profile.displayName;
                     newUser.google.email = profile.emails[0].value; // pull the first email
-                    newUser.google.whIp[0] = req.ip;
+                    newUser.google.whIp = req.ip;
 
           // save the user
           newUser.save(function(err) {

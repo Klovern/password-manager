@@ -44,9 +44,14 @@ app.post('/signup', checkSignupRequest, passport.authenticate('local-signup', {
     })
 );
 
+app.post('/signup-generate', function(req,res){
+    res.render('signup' ,{ messages: { generated: "" , errors : ""  , email:"" }});
+});
+
+
 
 app.get('/signup', function(req, res) {
-  res.render('signup' ,{ messages: { generated: "" , errors : ""  , email:"" }});
+  res.render('signup' ,{ messages: { generated: "" , errors : ""  , email:"" , signupMessage : req.flash('signupMessage')}});
 });
 
 
@@ -64,7 +69,6 @@ app.get('/logout', function(req, res) {
 
 
 app.get('/generate',function(req,res){
-  console.log("body" +String(req.body));
   res.render('signup' ,{ messages: { generated : generate(), errors : "", email : req.body.email}});
 });
 
@@ -86,7 +90,7 @@ function isLoggedIn(req, res, next) {
 function checkSignupRequest(req, res, next){
     req.checkBody('email', 'Email is required').notEmpty().isEmail();
     req.checkBody('password', 'Password is required').notEmpty();
-    req.checkBody('password', 'Passwords minimum length is 7').len(7,20);
+    req.checkBody('password', 'Password\'s minimum length is 7').len(7,20);
     req.checkBody('password_confirm', 'Passwords must match').equals(req.body.password);
     //validate
     var errors = req.validationErrors();
