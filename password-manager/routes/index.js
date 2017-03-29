@@ -15,18 +15,6 @@ var expressValidator = require('express-validator');
 
 
 app.get('/', function(req, res, next) {
-  var cookie = req.cookies.cookieName;
-  if (cookie === undefined)
- {
-   // no: set a new cookie
-   var randomNumber=Math.random().toString();
-   randomNumber=randomNumber.substring(2,randomNumber.length);
-   res.cookie('cookieName',randomNumber, { maxAge: 900000, httpOnly: true });
-   console.log('cookie created successfully');
- }
- else{
-   console.log("cookie already exist");
- }
   res.render('index');
 });
 
