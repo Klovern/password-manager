@@ -15,6 +15,18 @@ var expressValidator = require('express-validator');
 
 
 app.get('/', function(req, res, next) {
+  var cookie = req.cookies.cookieName;
+  if (cookie === undefined)
+ {
+   // no: set a new cookie
+   var randomNumber=Math.random().toString();
+   randomNumber=randomNumber.substring(2,randomNumber.length);
+   res.cookie('cookieName',randomNumber, { maxAge: 900000, httpOnly: true });
+   console.log('cookie created successfully');
+ }
+ else{
+   console.log("cookie already exist");
+ }
   res.render('index');
 });
 
@@ -34,6 +46,7 @@ app.post('/login',
 
 app.get('/login', function(req, res) {
   // render the page and pass in any flash data if it exists
+  console.log(req.cookies);
   res.render('login');
 });
 
@@ -51,7 +64,10 @@ app.post('/signup-generate', function(req,res){
 
 
 app.get('/signup', function(req, res) {
+
   res.render('signup' ,{ messages: { generated: "" , errors : ""  , email:"" , signupMessage : req.flash('signupMessage')}});
+
+
 });
 
 
@@ -69,6 +85,7 @@ app.get('/logout', function(req, res) {
 
 
 app.get('/generate',function(req,res){
+
   res.render('signup' ,{ messages: { generated : generate(), errors : "", email : req.body.email}});
 });
 
@@ -88,7 +105,7 @@ function isLoggedIn(req, res, next) {
 }
 
 function checkSignupRequest(req, res, next){
-    req.checkBody('email', 'Email is required').notEmpty().isEmail();
+    req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('password', 'Password\'s minimum length is 7').len(7,20);
     req.checkBody('password_confirm', 'Passwords must match').equals(req.body.password);
@@ -96,7 +113,7 @@ function checkSignupRequest(req, res, next){
     var errors = req.validationErrors();
 
     if (errors) {
-        res.render('signup',{messages: { generated : "", errors : errors.map((e) => e.msg), email : req.body.email}});
+        res.render('signup',{message : errors.map((e) => e.msg)});
     } else {
       next();
     }

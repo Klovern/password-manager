@@ -1,12 +1,21 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
+
+var cookieSchema = new mongoose.Schema({
+  email: String,
+  authMessage: String ,
+  authMethod : String,
+});
+
+
 var userSchema = mongoose.Schema({
 
    local  : {
     email : String,
     password : String,
     whIp: [String],
+    authCookies : [cookieSchema]
   },
 
   facebook: {
@@ -25,6 +34,9 @@ var userSchema = mongoose.Schema({
     whIp: [String],
   }
 });
+
+
+
 
 // methods ======================
 // generating a hash

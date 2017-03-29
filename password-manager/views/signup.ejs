@@ -17,17 +17,10 @@
     <div class="col-sm-6 col-sm-offset-3">
 
       <h1><span class="fa fa-sign-in"></span> Signup</h1>
-      <% if (messages.generated.length > 0 ) { %>
-        <div class="alert alert-success">Generated password: <%=messages.generated %></div> <% }
-        %>
 
-        <% if (messages.messages.signupMessage > 0) { %>
-          <div class="alert alert-danger">Passport errors: <%=messages.signupMessage %></div> <% }
-          %>
 
-      <% if (messages.errors.length > 0) { %>
-        <div class="alert alert-danger"><% messages.errors.forEach(function(errors) { %> <li><%= errors %></li> <% }); %></div>
-        <% } %>
+
+
 
 
 

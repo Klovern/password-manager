@@ -9,6 +9,8 @@ var passport = require('passport')
 , LocalStrategy = require('passport-local').Strategy;
 
 var validation = require('../validation/validate');
+var cookietable = require('../validation/cookie-table');
+var generate = require('../extra/PWgen');
 
 init();
 
@@ -95,7 +97,7 @@ passport.use('local-signup', new LocalStrategy({
 
              // if there is no user with that email
              // create the user
-             var newUser            = new User();
+             var newUser = new User();
              // set the user's local credentials
 
              newUser.local.email    = email;
@@ -103,11 +105,14 @@ passport.use('local-signup', new LocalStrategy({
              if(req.body.onoffswitch == "on")
                 newUser.local.whIp = req.ip;
 
-             // save the user
-             newUser.save(function(err) {
-                 if (err)
-                     throw err;
-                 return done(null, newUser);
+            newUser.local.authCookies = createCookie(req,email);
+
+            // save the user
+            newUser.save(function(err) {
+              if (err)
+                throw err;
+              console.log("saved!");
+              return done(null, newUser);
              });
          }
 
@@ -223,6 +228,23 @@ passport.use(new GoogleStrategy({
     });
   })
 );
+
+
+function createCookie(req, email){
+
+  var cookie = [`req.cookies.authCookie@${email}`];
+  var randomNumber= Math.floor(Math.random() * 999);
+  var message = generate();
+
+  var authCookie = {
+    email : email,
+    authMessage : validation.encryptCookieAuth(`[cookietable.auth${randomNumber}]`, message),
+    authMethod : `auth${randomNumber}`
+  }
+  // res.cookie(`authCookie:${email}`, authCookie, { maxAge: 900000, httpOnly: true });
+  return authCookie;
+}
+
 
 
 module.exports = passport;

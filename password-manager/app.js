@@ -11,7 +11,7 @@ var index = require('./routes/index'),
             auth = require('./routes/auth');
 var app = express();
 var flash = require('connect-flash');
-var configDB = require('./config/database.js');
+var configDB = require('./config/database.js');;
 var expressValidator = require('express-validator');
 app.enable('trust proxy')
 //require('./config/passport')(passport);
